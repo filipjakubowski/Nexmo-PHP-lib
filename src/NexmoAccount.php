@@ -1,4 +1,5 @@
 <?php
+namespace PrawnSalad\Nexmo;
 
 /**
  * Class NexmoAccount handles interaction with your Nexmo account

@@ -1,4 +1,5 @@
 <?php
+namespace PrawnSalad\Nexmo;
 
 /**
  * Class NexmoMessage handles the methods and properties of sending an SMS message.
@@ -217,7 +218,7 @@ class NexmoMessage {
 	private function normaliseKeys ($obj) {
 		// Determine is working with a class or araay
 		if ($obj instanceof stdClass) {
-			$new_obj = new stdClass();
+			$new_obj = new \stdClass();
 			$is_obj = true;
 		} else {
 			$new_obj = array();
