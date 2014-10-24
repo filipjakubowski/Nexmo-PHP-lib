@@ -217,7 +217,7 @@ class NexmoMessage {
 	 */
 	private function normaliseKeys ($obj) {
 		// Determine is working with a class or araay
-		if ($obj instanceof stdClass) {
+		if (is_object($obj)) {
 			$new_obj = new \stdClass();
 			$is_obj = true;
 		} else {
@@ -228,15 +228,15 @@ class NexmoMessage {
 
 		foreach($obj as $key => $val){
 			// If we come across another class/array, normalise it
-			if ($val instanceof stdClass || is_array($val)) {
+			if (is_object($val) || is_array($val)) {
 				$val = $this->normaliseKeys($val);
 			}
 			
 			// Replace any unwanted characters in they key name
 			if ($is_obj) {
-				$new_obj->{str_replace('-', '', $key)} = $val;
+				$new_obj->{str_replace('-', '_', $key)} = $val;
 			} else {
-				$new_obj[str_replace('-', '', $key)] = $val;
+				$new_obj[str_replace('-', '_', $key)] = $val;
 			}
 		}
 
