@@ -172,7 +172,7 @@ namespace PrawnSalad\Nexmo;
 			$requestParameters = array('country_code'=>$country_code, 'msisdn'=>$msisdn);
 			$requestParameters = array_merge($requestParameters, $options);
 				
-			$tmp = $this->apiCall('update_numbers', $requestParameters);
+			$tmp = $this->apiCall('update_number', $requestParameters);
 			return ($tmp['http_code'] === 200);
 		}
 		
