@@ -27,7 +27,8 @@ namespace PrawnSalad\Nexmo;
 			'get_own_numbers' => array('method' => 'GET', 'url' => '/account/numbers/{k}/{s}'),
 			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}?pattern={pattern}'),
 			'buy_number' => array('method' => 'POST', 'url' => '/number/buy/{k}/{s}/{country_code}/{msisdn}'),
-			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}')
+			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}'),
+			'update_number' => array('method' => 'POST', 'url' => '/number/update/{k}/{s}/{country_code}/{msisdn}'),
 		);
 
 
@@ -127,12 +128,18 @@ namespace PrawnSalad\Nexmo;
 		 * Search available numbers to purchase for your account
 		 * @param $country_code Country code to search available numbers in
 		 * @param $pattern Number pattern to search for
+		 * @param $features optional comma separated list of features (Ex. SMS,VOICE)
 		 * @return bool
 		 */
-		public function numbersSearch ($country_code, $pattern) {
+		public function numbersSearch ($country_code, $pattern, $features=null) {
 			$country_code = strtoupper($country_code);
 
-			$tmp = $this->apiCall('search_numbers', array('country_code'=>$country_code, 'pattern'=>$pattern));
+			$requestParameters = array('country_code'=>$country_code, 'pattern'=>$pattern);
+			if($features){
+				$requestParameters['features'] = $features;
+			}
+			
+			$tmp = $this->apiCall('search_numbers', $requestParameters);
 			if (!$tmp['data'] || !isset($tmp['data']['numbers'])) return false;
 			return $tmp['data']['numbers'];
 		}
@@ -152,6 +159,24 @@ namespace PrawnSalad\Nexmo;
 		}
 
 
+		/**
+		 * Update settings for the specified number
+		 * @param $country_code Country code to search available numbers in
+		 * @param $msisdn the phone number 
+		 * @param $options array of options to update
+		 * @return bool
+		 */
+		public function updateNumber ($country_code, $msisdn, $options) {
+			$country_code = strtoupper($country_code);
+
+			$requestParameters = array('country_code'=>$country_code, 'msisdn'=>$msisdn);
+			$requestParameters = array_merge($requestParameters, $options);
+				
+			$tmp = $this->apiCall('update_numbers', $requestParameters);
+			return ($tmp['http_code'] === 200);
+		}
+		
+		
 		/**
 		 * Cancel an existing number on your account
 		 * @param $country_code Country code for which the number is for
