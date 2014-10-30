@@ -113,7 +113,6 @@ class NexmoCall{
 			}
 
 			$from_nexmo = curl_exec( $to_nexmo );
-			error_log(print_r(curl_getinfo($to_nexmo), true));
 			curl_close ( $to_nexmo );
 
 		} elseif (ini_get('allow_url_fopen')) {
