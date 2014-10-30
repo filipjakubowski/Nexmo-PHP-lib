@@ -25,7 +25,7 @@ namespace PrawnSalad\Nexmo;
 			'get_balance' => array('method' => 'GET', 'url' => '/account/get-balance/{k}/{s}'),
 			'get_pricing' => array('method' => 'GET', 'url' => '/account/get-pricing/outbound/{k}/{s}/{country_code}'),
 			'get_own_numbers' => array('method' => 'GET', 'url' => '/account/numbers/{k}/{s}'),
-			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}?pattern={pattern}'),
+			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}'),
 			'buy_number' => array('method' => 'POST', 'url' => '/number/buy/{k}/{s}/{country_code}/{msisdn}'),
 			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}'),
 			'update_number' => array('method' => 'POST', 'url' => '/number/update/{k}/{s}/{country_code}/{msisdn}'),
@@ -207,13 +207,22 @@ namespace PrawnSalad\Nexmo;
 			$url = $cmd['url'];
 			$url = str_replace(array('{k}', '{s}') ,array($this->nx_key, $this->nx_secret), $url);
 
-			$parsed_data = array();
-			foreach ($data as $k => $v) $parsed_data['{'.$k.'}'] = $v;
-			$url = str_replace(array_keys($parsed_data) ,array_values($parsed_data), $url);
+			$post_data = array();
+			foreach ($data as $k => $v){
+				$count = 0;
+				$url = str_replace('{'.$k.'}', $v, $url, $count);
+				if($count == 0){
+					$post_data[$k] = $v;
+				}
+			}
 
 			$url = trim($this->rest_base_url, '/') . $url;
-			$post_data = '';
-
+			if ($cmd['method'] == 'GET') {
+				if (count($post_data)>0){
+					$url .= '?' . http_build_query($post_data);
+				}
+			}
+			
 			// If available, use CURL
 			if (function_exists('curl_version')) {
 
@@ -224,7 +233,7 @@ namespace PrawnSalad\Nexmo;
 
 				if ($cmd['method'] == 'POST') {
 					curl_setopt( $to_nexmo, CURLOPT_POST, true );
-					curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, $post_data );
+					curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, http_build_query($post_data) );
 				}
 
 				$from_nexmo = curl_exec( $to_nexmo );
@@ -245,7 +254,7 @@ namespace PrawnSalad\Nexmo;
 				if ($cmd['method'] == 'POST') {
 					$opts['http']['method'] = 'POST';
 					$opts['http']['header'] .= "\r\nContent-type: application/x-www-form-urlencoded";
-					$opts['http']['content'] = $post_data;
+					$opts['http']['content'] = http_build_query($post_data);
 				}
 
 				$context = stream_context_create($opts);
