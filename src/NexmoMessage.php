@@ -102,7 +102,8 @@ class NexmoMessage {
 			'from' => $from,
 			'to' => $to,
 			'text' => $message,
-			'type' => $containsUnicode ? 'unicode' : 'text'
+			'type' => $containsUnicode ? 'unicode' : 'text',
+			'status-report-req' => '1'
 		);
 		return $this->sendRequest ( $post );
 		
