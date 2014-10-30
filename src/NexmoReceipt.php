@@ -23,6 +23,7 @@ class NexmoReceipt {
 	public $network = '';
 	public $message_id = '';
 	public $status = '';
+	public $errorCode = 0;
 	public $received_time = 0;    // Format: UNIX timestamp
 
 	public $found = false;
@@ -43,6 +44,7 @@ class NexmoReceipt {
 		$this->network = $data['network-code'];
 		$this->message_id = $data['messageId'];
 		$this->status = strtoupper($data['status']);
+		$this->errorCode = $data['err-code'];
 
 		// Format the date into timestamp
 		$dp = date_parse_from_format('ymdGi', $data['scts']);
